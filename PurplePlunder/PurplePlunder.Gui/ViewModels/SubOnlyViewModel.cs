@@ -1,4 +1,4 @@
-﻿using PurplePlunder.Core.Events;
+using PurplePlunder.Core.Events;
 using PurplePlunder.Gui.Interfaces;
 using PurplePlunder.Services.Interfaces;
 using PurplePlunder.Shared.Events;
@@ -21,18 +21,18 @@ namespace PurplePlunder.Gui.ViewModels
 
         public override void OnBeforeShown()
         {
-            _eventAggregator.GetEvent<SubOnlyAuthChangedEvent>().Subscribe(Changed);
+            _eventAggregator.GetEvent<SubOnlyAuthChangedEvent>().Subscribe(SubOnlyAuthChanged);
             _authListener.StartListenForToken();
             base.OnBeforeShown();
         }
 
         public override void OnBeforeHidden()
         {
-            _eventAggregator.GetEvent<SubOnlyAuthChangedEvent>().Unsubscribe(Changed);
+            _eventAggregator.GetEvent<SubOnlyAuthChangedEvent>().Unsubscribe(SubOnlyAuthChanged);
             base.OnBeforeHidden();
         }
 
-        private void Changed(bool obj)
+        private void SubOnlyAuthChanged(bool obj)
         {
             _navigationService.NavigateBack();
         }

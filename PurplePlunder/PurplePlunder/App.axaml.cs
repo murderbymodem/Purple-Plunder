@@ -38,7 +38,7 @@ public partial class App : Application
         }
     }
 
-    private void OnExit(object? sender,
+    private void OnExit(object sender,
         ControlledApplicationLifetimeExitEventArgs controlledApplicationLifetimeExitEventArgs)
     {
         if (_singletonMutex != null)

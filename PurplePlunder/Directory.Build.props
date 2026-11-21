@@ -1,0 +1,11 @@
+<Project>
+  <!-- Applies to every project in this folder -->
+  <ItemGroup>
+    <!--
+      Avalonia 11.3.11 depends on Tmds.DBus.Protocol 0.21.2, which has a high severity vulnerability
+      (GHSA-xrw6-gwf8-vvr9, fixed in 0.21.3). Avalonia uses it for D-Bus on Linux (portal file dialogs).
+      Remove this once Avalonia is updated to 11.3.16 or later, which depends on 0.21.3 itself.
+    -->
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
+  </ItemGroup>
+</Project>

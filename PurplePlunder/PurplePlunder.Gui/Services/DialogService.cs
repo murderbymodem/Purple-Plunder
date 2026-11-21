@@ -1,4 +1,4 @@
-﻿using Ninject;
+using Ninject;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -185,7 +185,7 @@ namespace PurplePlunder.Gui.Services
             }
         }
 
-        private void DispatcherTimer_Tick(object? sender, EventArgs e)
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             if (sender is DispatcherTimer dispatcherTimer)
             {

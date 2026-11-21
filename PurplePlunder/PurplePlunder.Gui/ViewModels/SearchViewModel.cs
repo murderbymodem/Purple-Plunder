@@ -1,4 +1,4 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using PurplePlunder.Core.Enums;
 using PurplePlunder.Core.Models;
@@ -18,7 +18,6 @@ namespace PurplePlunder.Gui.ViewModels
 
         private ICommand _clearUrlsCommand;
         private ICommand _clearIdsCommand;
-        private ICommand _searchCommand;
         private ICommand _cancelCommand;
 
         private readonly IApiService _apiService;

@@ -1,9 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
+        <!-- MainWindow is created through dependency injection and has no parameterless constructor by design -->
+        <NoWarn>$(NoWarn);AVLN3001</NoWarn>
         <LangVersion>14</LangVersion>
     </PropertyGroup>
 
