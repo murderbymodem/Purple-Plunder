@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Windows.Input;
 using PurplePlunder.Core.Constants;
 using PurplePlunder.Gui.Interfaces;
@@ -63,7 +63,7 @@ namespace PurplePlunder.Gui.ViewModels
                 lock (_commandLockObject)
                 {
                     _ = _authListener.StartListenForToken();
-                    var psi = new ProcessStartInfo($"https://id.twitch.tv/oauth2/authorize?client_id={Constants.ClientId}&redirect_uri={Constants.RedirectUrl}&response_type=token&scope=user:read:subscriptions user_subscriptions&force_verify=true")
+                    var psi = new ProcessStartInfo($"https://id.twitch.tv/oauth2/authorize?client_id={Constants.ClientId}&redirect_uri={Constants.RedirectUrl}&response_type=token&scope=user:read:subscriptions&force_verify=true")
                     {
                         UseShellExecute = true,
                         Verb = "open"

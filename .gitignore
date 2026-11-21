@@ -337,3 +337,6 @@ ASALocalRun/
 # Downloaded by scripts/get-ffmpeg.ps1
 PurplePlunder/Libraries/ffmpeg.exe
 PurplePlunder/Libraries/ffmpeg-*.txt
+PurplePlunder/Libraries/linux/
+build/
+*.AppImage

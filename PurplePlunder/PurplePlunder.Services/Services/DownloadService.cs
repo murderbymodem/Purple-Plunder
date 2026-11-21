@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -730,11 +731,21 @@ namespace PurplePlunder.Services.Services
         [System.Runtime.InteropServices.DllImport("kernel32.dll")]
         private static extern uint SetThreadExecutionState(uint esFlags);
 
+        private static readonly object _inhibitLock = new object();
+        private static int _inhibitCount;
+        private static Process _inhibitProcess;
+
         /// <summary>
-        /// Prevents Windows from going to sleep while a live capture is running
+        /// Prevents the PC from going to sleep while a live capture is running
         /// </summary>
         private static void KeepSystemAwake(bool keepAwake)
         {
+            if (OperatingSystem.IsLinux())
+            {
+                InhibitLinuxSleep(keepAwake);
+                return;
+            }
+
             if (!OperatingSystem.IsWindows())
             {
                 return;
@@ -772,6 +783,52 @@ namespace PurplePlunder.Services.Services
                 recordingFile, outputFile, new CropInfo(false, false, 0, 0));
 
             FileSystem.DeleteFile(recordingFile);
+        }
+
+        /// <summary>
+        /// Holds a systemd-logind sleep and idle inhibitor while at least one capture runs. KDE Plasma (PowerDevil)
+        /// and other desktops honor it and list Purple Plunder as the reason sleep is blocked.
+        /// </summary>
+        private static void InhibitLinuxSleep(bool inhibit)
+        {
+            lock (_inhibitLock)
+            {
+                _inhibitCount = Math.Max(0, _inhibitCount + (inhibit ? 1 : -1));
+
+                try
+                {
+                    if (_inhibitCount > 0 && (_inhibitProcess == null || _inhibitProcess.HasExited))
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo("systemd-inhibit")
+                        {
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+
+                        foreach (string arg in new[] { "--what=sleep:idle", "--who=Purple Plunder",
+                                     "--why=Recording a live stream", "--mode=block", "sleep", "infinity" })
+                        {
+                            psi.ArgumentList.Add(arg);
+                        }
+
+                        _inhibitProcess = Process.Start(psi);
+                    }
+                    else if (_inhibitCount == 0 && _inhibitProcess != null)
+                    {
+                        if (!_inhibitProcess.HasExited)
+                        {
+                            _inhibitProcess.Kill(true);
+                        }
+
+                        _inhibitProcess.Dispose();
+                        _inhibitProcess = null;
+                    }
+                }
+                catch
+                {
+                    // No systemd-logind, recording works but the PC may go to sleep
+                }
+            }
         }
 
         private CropInfo CropVodPlaylist(VodPlaylist vodPlaylist, bool cropStart, bool cropEnd,

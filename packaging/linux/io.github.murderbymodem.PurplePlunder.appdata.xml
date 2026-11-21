@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.murderbymodem.PurplePlunder</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Purple Plunder</name>
+  <summary>Download Twitch VODs and record live streams</summary>
+  <description>
+    <p>
+      A fast VOD downloader with 1440p support and a channel monitor that records broadcasts while they are
+      live, so the original audio is kept before Twitch mutes it.
+    </p>
+  </description>
+  <launchable type="desktop-id">purple-plunder.desktop</launchable>
+  <url type="homepage">https://github.com/murderbymodem/Purple-Plunder</url>
+  <url type="bugtracker">https://github.com/murderbymodem/Purple-Plunder/issues</url>
+  <developer id="io.github.murderbymodem">
+    <name>murderbymodem</name>
+  </developer>
+  <content_rating type="oars-1.1"/>
+</component>

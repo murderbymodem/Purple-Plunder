@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -167,6 +167,13 @@ namespace PurplePlunder.Services.Services
 
                         string checkClientId = subOnly ? Constants.ClientIdWeb : Constants.ClientId;
 
+                        if (!subOnly && Constants.LegacyClientId.Equals(clientId, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Saved login from before Purple Plunder had its own Twitch app: clean it up
+                            RevokeToken(accessToken, Constants.LegacyClientId);
+                            return false;
+                        }
+
                         if (
                             !string.IsNullOrWhiteSpace(login)
                             && !string.IsNullOrWhiteSpace(userId)
@@ -190,12 +197,14 @@ namespace PurplePlunder.Services.Services
                 return;
             }
 
+            RevokeToken(accessToken, subOnly ? Constants.ClientIdWeb : Constants.ClientId);
+        }
+
+        private void RevokeToken(string accessToken, string clientId)
+        {
             using (WebClient webClient = CreateWebClientWithEncoding())
             {
-                webClient.QueryString.Add(
-                    "client_id",
-                    subOnly ? Constants.ClientIdWeb : Constants.ClientId
-                );
+                webClient.QueryString.Add("client_id", clientId);
                 webClient.QueryString.Add("token", accessToken);
 
                 try

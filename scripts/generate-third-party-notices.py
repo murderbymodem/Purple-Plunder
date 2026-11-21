@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Regenerates THIRD-PARTY-NOTICES.md from the NuGet packages that end up in the Windows build.
+Regenerates THIRD-PARTY-NOTICES.md from the NuGet packages that end up in the Windows and Linux builds.
 
 Run from the repository root after changing dependencies:
 
@@ -19,7 +19,7 @@ PACKAGES = os.environ.get("NUGET_PACKAGES") or os.path.join(os.path.expanduser("
 
 # Not part of the release build: build tooling, debug-only packages and natives for other platforms
 EXCLUDE = re.compile(r"^(Avalonia\.BuildServices|Avalonia\.Diagnostics|Microsoft\.DotNet\.UpgradeAssistant.*)$"
-                     r"|\.NativeAssets\.(Linux|macOS|WebAssembly)$")
+                     r"|\.NativeAssets\.(macOS|WebAssembly)$")
 
 # Packages whose nuspec only links to a license file
 KNOWN_LICENSES = {
@@ -93,7 +93,7 @@ def main():
     w("| Component | Version | License |")
     w("|---|---|---|")
     w("| Purple Plunder, based on TwitchLeecher-DX and Twitch Leecher | | MIT |")
-    w("| FFmpeg (`ffmpeg.exe`, gyan.dev essentials build, shipped next to the application) | see below | GPL-3.0 |")
+    w("| FFmpeg (separate program shipped next to the application) | see below | GPL-3.0 |")
     w("| .NET runtime (self-contained build) | 10 | MIT |")
     for i in infos:
         w(f"| [{i['name']}]({i['url']}) | {i['version']} | {i['license']} |")
@@ -102,15 +102,18 @@ def main():
     w("")
 
     w("## FFmpeg\n")
-    w("Release builds ship `ffmpeg.exe` from the FFmpeg \"essentials\" build by gyan.dev "
-      "(https://www.gyan.dev/ffmpeg/builds/). It is a separate program that Purple Plunder runs to merge "
-      "downloaded video chunks; it is not linked into Purple Plunder.\n")
-    w("FFmpeg is licensed under the GNU General Public License version 3 in this build. The license text and "
-      "the build information, including the link to the exact FFmpeg source code commit and the versions of "
-      "all included libraries, are shipped in the release zip as `licenses/ffmpeg-LICENSE.txt` and "
-      "`licenses/ffmpeg-README.txt`.\n")
-    w("FFmpeg source code: https://github.com/FFmpeg/FFmpeg  ")
-    w("Build source and archived releases: https://github.com/GyanD/codexffmpeg/releases\n")
+    w("Purple Plunder ships FFmpeg as a separate program that it runs to merge downloaded video chunks; "
+      "FFmpeg is not linked into Purple Plunder. Both builds are licensed under the GNU General Public License "
+      "version 3.\n")
+    w("- **Windows** (`ffmpeg.exe` in the release zip): FFmpeg \"essentials\" build by gyan.dev "
+      "(https://www.gyan.dev/ffmpeg/builds/, archived at https://github.com/GyanD/codexffmpeg/releases), "
+      "fetched by `scripts/get-ffmpeg.ps1`.")
+    w("- **Linux** (`ffmpeg` inside the AppImage): static build by John Van Sickle "
+      "(https://johnvansickle.com/ffmpeg/), fetched by `scripts/get-ffmpeg-linux.sh`.\n")
+    w("The license text and the build information of each build, including the version of FFmpeg and of every "
+      "included library, ship as `licenses/ffmpeg-LICENSE.txt` and `licenses/ffmpeg-README.txt` (in the AppImage "
+      "under `usr/share/doc/purple-plunder/licenses/`).\n")
+    w("FFmpeg source code: https://github.com/FFmpeg/FFmpeg (release tags `n<version>`) and https://ffmpeg.org/download.html\n")
 
     w("## .NET runtime\n")
     w("Copyright (c) .NET Foundation and Contributors\n")

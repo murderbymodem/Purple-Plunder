@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -206,19 +206,7 @@ namespace PurplePlunder.Gui.ViewModels
 
                                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                                 {
-                                    var args =
-                                        "--print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:\"file://" +
-                                        folder + "/" + download.DownloadParams.Filename + "\" string:\"\"";
-                                    using Process dbusShowItemsProcess = new Process
-                                    {
-                                        StartInfo = new ProcessStartInfo
-                                        {
-                                            FileName = "dbus-send",
-                                            Arguments = args,
-                                            UseShellExecute = true
-                                        }
-                                    };
-                                    dbusShowItemsProcess.Start();
+                                    OpenFolderLinux(folder, Path.Combine(folder, download.DownloadParams.Filename));
                                 }
                             }
                         }
@@ -229,6 +217,43 @@ namespace PurplePlunder.Gui.ViewModels
             {
                 _dialogService.ShowAndLogException(ex);
             }
+        }
+
+        /// <summary>
+        /// Shows the file in the file manager (Dolphin on KDE Plasma) via the freedesktop FileManager1
+        /// D-Bus interface, or opens the folder with xdg-open if that is not available
+        /// </summary>
+        private static void OpenFolderLinux(string folder, string file)
+        {
+            try
+            {
+                if (File.Exists(file))
+                {
+                    ProcessStartInfo dbus = new ProcessStartInfo("dbus-send") { UseShellExecute = false };
+
+                    foreach (string arg in new[] { "--session", "--print-reply", "--dest=org.freedesktop.FileManager1",
+                                 "/org/freedesktop/FileManager1", "org.freedesktop.FileManager1.ShowItems",
+                                 "array:string:" + new Uri(file).AbsoluteUri, "string:" })
+                    {
+                        dbus.ArgumentList.Add(arg);
+                    }
+
+                    using Process p = Process.Start(dbus);
+
+                    if (p != null && p.WaitForExit(5000) && p.ExitCode == 0)
+                    {
+                        return;
+                    }
+                }
+            }
+            catch
+            {
+                // Fall back to xdg-open
+            }
+
+            ProcessStartInfo xdg = new ProcessStartInfo("xdg-open") { UseShellExecute = false };
+            xdg.ArgumentList.Add(folder);
+            Process.Start(xdg)?.Dispose();
         }
 
         #endregion Methods

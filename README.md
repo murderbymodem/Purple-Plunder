@@ -10,8 +10,9 @@ A fast, easy to use VOD downloader for Twitch, with 1440p support and a channel 
 - **Crash-safe recordings**: live captures are written to disk as they happen. A recording cut off by a crash or power loss stays playable and is finished automatically on the next start.
 - **Muted chunk fallback**: when the original version of a chunk is gone, Purple Plunder downloads the muted version instead of leaving a gap in the video.
 - **Codec aware quality list**: qualities show their codec when it is not H.264, e.g. `HEVC` or `AV1`. A new `1440p` option is available for the default download quality, and `Source` always picks the best available quality.
-- **Keeps your PC awake** while a live capture is running (Windows).
+- **Keeps your PC awake** while a live capture is running (Windows, and Linux desktops such as KDE Plasma).
 - **Self-contained Windows build**: a single `PurplePlunder.exe`, no .NET installation needed.
+- **Linux AppImage**: one file that runs on any modern 64-bit distribution, built with KDE Plasma integration in mind.
 
 ## Features
 
@@ -35,6 +36,32 @@ Grab the latest `PurplePlunder-vX.Y.Z-win-x64.zip` from the [Releases](https://g
 - Windows 10/11, 64 bit
 - No .NET installation required
 - Keep `ffmpeg.exe` in the same folder as `PurplePlunder.exe`
+
+## Download (Linux AppImage)
+
+Grab the latest `PurplePlunder-X.Y.Z-x86_64.AppImage` from the [Releases](https://github.com/murderbymodem/Purple-Plunder/releases) page, make it executable and run it:
+
+```bash
+chmod +x PurplePlunder-*-x86_64.AppImage
+```
+
+```bash
+./PurplePlunder-*-x86_64.AppImage
+```
+
+In Dolphin you can also right-click the file, open **Properties → Permissions**, tick **Is executable** and double-click it.
+
+- 64-bit (x86_64) distributions; no .NET or FFmpeg installation needed, both are included
+- Runs without `libfuse2`, which current distributions no longer install by default
+- To get a Purple Plunder entry in the application launcher, use an AppImage manager such as [Gear Lever](https://flathub.org/apps/it.mijorus.gearlever) or [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
+
+KDE Plasma notes:
+
+- Folder and file pickers use the KDE file dialog (through xdg-desktop-portal-kde, installed with Plasma by default).
+- "Open download folder" opens Dolphin with the video selected; links open in your default browser.
+- The taskbar and task switcher show the Purple Plunder icon and group its windows.
+- While a live stream is recorded, Purple Plunder holds a systemd-logind sleep inhibitor, which Plasma's power management respects, so the PC does not go to sleep mid-recording.
+- On Plasma's Wayland session the app runs through XWayland. If it looks too small with display scaling, start it with a scale factor, e.g. `AVALONIA_GLOBAL_SCALE_FACTOR=1.5 ./PurplePlunder-*-x86_64.AppImage` (in Gear Lever or a launcher entry, add it as an environment variable).
 
 ## Using the channel monitor
 
@@ -71,9 +98,15 @@ Then build:
 dotnet publish PurplePlunder/PurplePlunder/PurplePlunder.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 ```
 
-Releases are built automatically by GitHub Actions when a `v*` tag (e.g. `v4.0.0`) is pushed.
+To build the Linux AppImage (needs the .NET 10 SDK, `curl` and `tar`):
 
-On Linux the app also builds and runs (`-r linux-x64`) and uses the `ffmpeg` found on your `PATH`, but Windows is the supported platform for now.
+```bash
+scripts/build-appimage.sh
+```
+
+A plain Linux build (`dotnet publish ... -r linux-x64`) without the AppImage uses the `ffmpeg` found on your `PATH`.
+
+Releases are built automatically by GitHub Actions when a `v*` tag (e.g. `v4.1.0`) is pushed: the Windows zip and the Linux AppImage are attached to the release.
 
 ## Support & Issues
 
@@ -107,4 +140,4 @@ Purple Plunder is based on TwitchLeecher-DX by Manuel "Brainy" Schneider, which 
 
 Purple Plunder is licensed under the [MIT License](LICENSE), like the projects it is based on.
 
-The Windows release also contains third-party software, most notably FFmpeg (GPL-3.0), which ships as a separate `ffmpeg.exe`. Their licenses are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) and included in the `licenses` folder of every release.
+The Windows and Linux releases also contain third-party software, most notably FFmpeg (GPL-3.0), which ships as a separate program. Their licenses are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) and included with every release (the `licenses` folder of the Windows zip, `usr/share/doc/purple-plunder` inside the AppImage).

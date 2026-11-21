@@ -1,18 +1,19 @@
-name: Windows release
+name: Release
 
-# Push a tag like v4.0.0 to build PurplePlunder.exe and attach it to a GitHub release.
-# Run manually from the Actions tab to just build the zip as a workflow artifact.
+# Push a tag like v4.1.0 to build the Windows zip and the Linux AppImage and publish them as a GitHub release.
+# Pull requests and manual runs from the Actions tab only build both as workflow artifacts.
 on:
   push:
     tags:
       - "v*"
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  windows:
     runs-on: windows-latest
 
     steps:
@@ -68,9 +69,54 @@ jobs:
           name: PurplePlunder-win-x64
           path: ${{ env.ZIP_NAME }}
 
+  linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      # johnvansickle.com is sometimes unreachable from GitHub's runners: keep the verified download.
+      # The key changes with the pinned version/checksum in the script.
+      - name: Cache FFmpeg
+        uses: actions/cache@v4
+        with:
+          path: PurplePlunder/Libraries/linux
+          key: ffmpeg-linux-${{ hashFiles('scripts/get-ffmpeg-linux.sh') }}
+
+      - name: Build AppImage
+        run: |
+          version="$(grep -oP 'AssemblyFileVersion\("\K[^"]+' PurplePlunder/GlobalAssemblyInfo.cs)"
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+            sed -i "s/AssemblyFileVersion(\".*\")/AssemblyFileVersion(\"$version\")/" PurplePlunder/GlobalAssemblyInfo.cs
+          fi
+          scripts/build-appimage.sh "$version"
+          echo "APPIMAGE=PurplePlunder-$version-x86_64.AppImage" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PurplePlunder-linux-x86_64
+          path: ${{ env.APPIMAGE }}
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, linux]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
       - name: Create release
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.ZIP_NAME }}
+          files: |
+            dist/*.zip
+            dist/*.AppImage
           generate_release_notes: true

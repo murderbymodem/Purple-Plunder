@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Purple Plunder
+GenericName=VOD Downloader
+Comment=Download Twitch VODs and record live streams
+Exec=purple-plunder
+Icon=purple-plunder
+Terminal=false
+Categories=AudioVideo;Video;
+Keywords=twitch;vod;download;stream;recorder;
+StartupWMClass=PurplePlunder
+StartupNotify=true

@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -35,6 +35,9 @@ class Program
         IconProvider.Current.Register<FontAwesomeIconProvider>();
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            // Linux: the window class must match StartupWMClass in the .desktop file, so the KDE Plasma
+            // taskbar and task switcher show the Purple Plunder icon and group its windows
+            .With(new X11PlatformOptions { WmClass = "PurplePlunder" })
             .WithInterFont()
             .UseReactiveUI()
             .LogToTrace();

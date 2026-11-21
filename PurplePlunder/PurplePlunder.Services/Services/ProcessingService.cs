@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -17,10 +17,24 @@ namespace PurplePlunder.Services.Services
     {
         #region Constants
 
-        public string FFMPEGExe =>
-            RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-                ? "ffmpeg"
-                : Path.Combine(AppContext.BaseDirectory, "ffmpeg.exe");
+        /// <summary>
+        /// Windows and the Linux AppImage ship ffmpeg next to the application.
+        /// Other Linux builds fall back to the ffmpeg on the PATH.
+        /// </summary>
+        public string FFMPEGExe
+        {
+            get
+            {
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    return Path.Combine(AppContext.BaseDirectory, "ffmpeg.exe");
+                }
+
+                string bundled = Path.Combine(AppContext.BaseDirectory, "ffmpeg");
+
+                return File.Exists(bundled) ? bundled : "ffmpeg";
+            }
+        }
 
         #endregion Constants
 
