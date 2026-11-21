@@ -46,12 +46,16 @@ install -m 644 "$ROOT"/licenses/* "$DOC/licenses/"
 install -m 644 "$ROOT/PurplePlunder/Libraries/linux/ffmpeg-LICENSE.txt" "$DOC/licenses/ffmpeg-LICENSE.txt"
 install -m 644 "$ROOT/PurplePlunder/Libraries/linux/ffmpeg-README.txt" "$DOC/licenses/ffmpeg-README.txt"
 
+# 5. Permissions: AppImages are run by users other than the packager. Make everything world-readable and
+#    executable wherever the owner can execute it (dotnet publish can leave files at 0744).
+chmod -R u+rwX,go+rX,go-w "$APPDIR"
+
 if [ "$APPDIR_ONLY" = true ]; then
   echo "AppDir ready in $APPDIR"
   exit 0
 fi
 
-# 5. Pack. The current appimagetool uses the static AppImage runtime, so the result runs without
+# 6. Pack. The current appimagetool uses the static AppImage runtime, so the result runs without
 #    libfuse2, which recent distributions (Kubuntu 24.04, Fedora KDE, ...) no longer install by default.
 TOOL="$BUILD/appimagetool"
 curl -fsSL -o "$TOOL" "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"

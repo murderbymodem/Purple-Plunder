@@ -43,7 +43,4 @@
       <Version>4.0.0-beta.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
 </Project>
