@@ -510,7 +510,6 @@ namespace PurplePlunder.Services.Services
             } while (!stop);
 
             return videos;
-            return videos;
         }
 
         private ObservableCollection<Vod> SearchUrls(string urls)

@@ -17,9 +17,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "10.0.x"
 
@@ -64,7 +64,7 @@ jobs:
           Compress-Archive -Path publish/* -DestinationPath $name
           "ZIP_NAME=$name" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: PurplePlunder-win-x64
           path: ${{ env.ZIP_NAME }}
@@ -73,16 +73,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "10.0.x"
 
       # johnvansickle.com is sometimes unreachable from GitHub's runners: keep the verified download.
       # The key changes with the pinned version/checksum in the script.
       - name: Cache FFmpeg
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: PurplePlunder/Libraries/linux
           key: ffmpeg-linux-${{ hashFiles('scripts/get-ffmpeg-linux.sh') }}
@@ -97,7 +97,7 @@ jobs:
           scripts/build-appimage.sh "$version"
           echo "APPIMAGE=PurplePlunder-$version-x86_64.AppImage" >> "$GITHUB_ENV"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: PurplePlunder-linux-x86_64
           path: ${{ env.APPIMAGE }}
@@ -108,13 +108,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             dist/*.zip

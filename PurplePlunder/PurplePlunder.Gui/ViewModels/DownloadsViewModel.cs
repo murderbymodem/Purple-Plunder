@@ -22,7 +22,6 @@ namespace PurplePlunder.Gui.ViewModels
 
         private ICommand _retryDownloadCommand;
         private ICommand _cancelDownloadCommand;
-        private ICommand _removeDownloadCommand;
         private ICommand _showLogCommand;
         private ICommand _openDownloadFolderCommand;
 
