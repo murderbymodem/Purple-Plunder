@@ -14,6 +14,8 @@ A fast, easy to use VOD downloader for Twitch, with 1440p support and a channel 
 - **Self-contained Windows build**: a single `PurplePlunder.exe`, no .NET installation needed.
 - **Linux AppImage**: one file that runs on any modern 64-bit distribution, built with KDE Plasma integration in mind.
 
+<img width="775" height="818" alt="ytdl-sub-win-gui_2WovSnTUpi" src="https://github.com/user-attachments/assets/fd4a0f13-351c-43b0-8513-5ae8939d87db" />
+
 ## Features
 
 - Very easy to use, no manual needed
